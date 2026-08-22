@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<!--
+  Focus Gate — popup.html
+  Copyright (c) 2026 Lady Alana
+  GitHub: @ladyalana808
+  Licensed under the MIT License. See LICENSE for details.
+-->
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  body {
+    width: 320px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    padding: 16px;
+    background: #1c1b29;
+    color: #f3f1fa;
+  }
+  h1 {
+    font-size: 16px;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2a2840;
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+  }
+  .toggle-label {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .status-sub {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-top: 2px;
+  }
+  .switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+  }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #4a4763;
+    transition: .2s;
+    border-radius: 24px;
+  }
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 18px; width: 18px;
+    left: 3px; bottom: 3px;
+    background-color: white;
+    transition: .2s;
+    border-radius: 50%;
+  }
+  input:checked + .slider { background-color: #7c5cff; }
+  input:checked + .slider:before { transform: translateX(20px); }
+
+  .add-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  input[type="text"] {
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #3a3852;
+    background: #14131e;
+    color: #f3f1fa;
+    font-size: 13px;
+  }
+  select {
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #3a3852;
+    background: #14131e;
+    color: #f3f1fa;
+    font-size: 13px;
+  }
+  button.add {
+    background: #7c5cff;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  button.add:hover { background: #6a4de0; }
+  button.quick-add {
+    background: #2a2840;
+    border: 1px solid #3a3852;
+    color: #f3f1fa;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  button.quick-add:hover { background: #3a3852; }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 10px;
+    background: #2a2840;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+  li .site-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  li .site-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  li .cat-tag {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 20px;
+    background: #3a3852;
+    opacity: 0.85;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  li button {
+    background: transparent;
+    border: none;
+    color: #ff8080;
+    cursor: pointer;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .empty {
+    text-align: center;
+    font-size: 12px;
+    opacity: 0.6;
+    padding: 12px 0;
+  }
+  .footer-note {
+    font-size: 11px;
+    opacity: 0.55;
+    margin-top: 10px;
+    line-height: 1.4;
+  }
+  .reason-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(10, 9, 17, 0.92);
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+  .reason-overlay.visible {
+    display: flex;
+  }
+  .reason-box {
+    background: #221f36;
+    border-radius: 14px;
+    padding: 18px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .reason-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .reason-sub {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+  #reasonInput {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #3a3852;
+    background: #14131e;
+    color: #f3f1fa;
+    font-size: 13px;
+    font-family: inherit;
+    resize: none;
+    margin-bottom: 6px;
+  }
+  .reason-error {
+    display: none;
+    font-size: 11px;
+    color: #ff8080;
+    margin-bottom: 10px;
+  }
+  .reason-error.visible {
+    display: block;
+  }
+  .reason-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .reason-confirm, .reason-cancel {
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+  }
+  .reason-confirm {
+    background: #4a3d70;
+    color: #f3f1fa;
+  }
+  .reason-confirm:hover {
+    background: #5a4a85;
+  }
+  .reason-cancel {
+    background: #7c5cff;
+    color: white;
+  }
+  .reason-cancel:hover {
+    background: #6a4de0;
+  }
+  .schedule-box {
+    background: #221f36;
+    border-radius: 10px;
+    padding: 4px 4px 10px 4px;
+    margin-bottom: 14px;
+  }
+  .schedule-toggle-row {
+    background: transparent;
+    margin-bottom: 0;
+    padding: 10px 8px;
+  }
+  .schedule-fields {
+    padding: 4px 10px 2px 10px;
+  }
+  .schedule-fields.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  .time-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .time-field {
+    flex: 1;
+  }
+  .time-field label {
+    display: block;
+    font-size: 11px;
+    opacity: 0.7;
+    margin-bottom: 4px;
+  }
+  .time-field input[type="time"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid #3a3852;
+    background: #14131e;
+    color: #f3f1fa;
+    font-size: 13px;
+  }
+  .days-row {
+    display: flex;
+    gap: 5px;
+    justify-content: space-between;
+  }
+  .day-btn {
+    flex: 1;
+    padding: 6px 0;
+    border-radius: 6px;
+    border: 1px solid #3a3852;
+    background: #14131e;
+    color: #f3f1fa;
+    font-size: 11px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .day-btn.active {
+    background: #7c5cff;
+    border-color: #7c5cff;
+  }
+  .stats-box {
+    display: flex;
+    justify-content: space-between;
+    background: #2a2840;
+    border-radius: 10px;
+    padding: 12px 8px;
+    margin-bottom: 14px;
+  }
+  .stat {
+    flex: 1;
+    text-align: center;
+  }
+  .stat-num {
+    font-size: 20px;
+    font-weight: 700;
+    color: #b39dff;
+  }
+  .stat-label {
+    font-size: 10px;
+    opacity: 0.65;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+</style>
+</head>
+<body>
+  <h1>🚫 Focus Gate</h1>
+
+  <div class="stats-box" id="statsBox">
+    <div class="stat">
+      <div class="stat-num" id="streakNum">0</div>
+      <div class="stat-label">day streak</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="bestNum">0</div>
+      <div class="stat-label">best streak</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="totalNum">0</div>
+      <div class="stat-label">resisted</div>
+    </div>
+  </div>
+
+  <div class="toggle-row">
+    <div>
+      <div class="toggle-label" id="statusLabel">Blocking is off</div>
+      <div class="status-sub" id="statusSub">Sites on your list load normally</div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="masterToggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="schedule-box">
+    <div class="toggle-row schedule-toggle-row">
+      <div>
+        <div class="toggle-label">Schedule blocking</div>
+        <div class="status-sub" id="scheduleSub">Off</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="scheduleToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div id="scheduleFields" class="schedule-fields">
+      <div class="time-row">
+        <div class="time-field">
+          <label>Start</label>
+          <input type="time" id="startTime" value="09:00">
+        </div>
+        <div class="time-field">
+          <label>End</label>
+          <input type="time" id="endTime" value="17:00">
+        </div>
+      </div>
+      <div class="days-row" id="daysRow">
+        <button type="button" class="day-btn" data-day="0">S</button>
+        <button type="button" class="day-btn" data-day="1">M</button>
+        <button type="button" class="day-btn" data-day="2">T</button>
+        <button type="button" class="day-btn" data-day="3">W</button>
+        <button type="button" class="day-btn" data-day="4">T</button>
+        <button type="button" class="day-btn" data-day="5">F</button>
+        <button type="button" class="day-btn" data-day="6">S</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="add-row">
+    <input type="text" id="siteInput" placeholder="e.g. youtube.com">
+    <button class="quick-add" id="quickAddBtn" title="Use current tab">📍</button>
+  </div>
+  <div class="add-row">
+    <select id="categorySelect">
+      <option value="social">Doomscrolling / Social</option>
+      <option value="shopping">Shopping</option>
+      <option value="news">News</option>
+      <option value="entertainment">Entertainment / Video</option>
+      <option value="other">Other</option>
+    </select>
+    <button class="add" id="addBtn">Add</button>
+  </div>
+
+  <ul id="siteList"></ul>
+  <div class="empty" id="emptyMsg">No sites added yet.</div>
+
+  <div class="footer-note">Blocks apply to the domain and any subpages. The toggle above and your schedule below both trigger blocking, either one being on is enough. Toggle off anytime you genuinely need through.</div>
+
+  <div class="reason-overlay" id="reasonOverlay">
+    <div class="reason-box">
+      <div class="reason-title">Before you turn this off...</div>
+      <div class="reason-sub">What's the real reason? Be honest with yourself.</div>
+      <textarea id="reasonInput" rows="3" placeholder="I need to turn this off because..."></textarea>
+      <div class="reason-error" id="reasonError">Give me a real reason, a few words at least.</div>
+      <div class="reason-buttons">
+        <button class="reason-cancel" id="reasonCancel">Never mind, stay focused</button>
+        <button class="reason-confirm" id="reasonConfirm">Turn it off</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
