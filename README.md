@@ -23,7 +23,7 @@ This extension isn't on the Chrome Web Store yet, so you'll need to load it manu
 1. Download or clone this repository
 2. Open Chrome and go to `chrome://extensions`
 3. Turn on **Developer mode** (top right toggle)
-4. Click **Load unpacked** and select the project folder
+4. Click **Load unpacked** and select the `extension` folder (not the repo root)
 5. Pin the extension to your toolbar for easy access
 
 ## How to use it
@@ -40,11 +40,16 @@ Once a listed site is blocked and you try to visit it, you'll be redirected to a
 
 ```
 focus-gate/
-├── manifest.json      # Extension config (Manifest V3)
-├── popup.html/.js      # The toolbar popup UI
-├── background.js       # Service worker: builds blocking rules, tracks stats
-├── block.html/.js      # The page shown when a blocked site is visited
-└── icons/               # Extension icons
+├── README.md
+├── LICENSE
+├── CHANGELOG.md
+├── .gitignore
+└── extension/
+    ├── manifest.json      # Extension config (Manifest V3)
+    ├── popup.html/.js      # The toolbar popup UI
+    ├── background.js       # Service worker: builds blocking rules, tracks stats
+    ├── block.html/.js      # The page shown when a blocked site is visited
+    └── icons/               # Extension icons
 ```
 
 ## Tech notes
@@ -59,6 +64,14 @@ focus-gate/
 - Per-site scheduling instead of one global schedule
 - A reflection view showing your logged reasons for turning blocking off over time
 
+## Author
+
+Built by **Lady Alana** ([@ladyalana808](https://github.com/ladyalana808))
+
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for release history.
+
 ## License
 
-Feel free to fork and adapt this for your own use.
+MIT License. See [LICENSE](./LICENSE) for full details. Feel free to fork and adapt this for your own use, just keep the copyright notice intact.
